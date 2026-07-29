@@ -3,3 +3,4 @@ fontmake
 fontbakery
 psautohint
 ttfautohint-py
+defcon
