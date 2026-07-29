@@ -1,4 +1,20 @@
 # Font Production Project Template (For Glyphs)
+
+## Fork notes
+
+This is a personal fork of [colinmford/font-production-project-template-glyphs](https://github.com/colinmford/font-production-project-template-glyphs) — all credit for the original pipeline design goes to Colin Ford. If you're looking for the canonical version of this template, go there instead.
+
+Full disclosure: I'm a type designer, not a build-tooling person, and I largely have no idea what I'm doing under the hood here — this fork happened by messing around with [Claude Code](https://claude.com/claude-code) and seeing what stuck. Use at your own risk, and always sanity-check what a build script does before you run it against real work.
+
+### What's changed from upstream
+
+- Added `C  Project Files/py/prepareGlyphsFile.py`, wired in as the first step of both `static-build.sh` and `vf-build.sh`. Before any font gets built, it:
+  - silently fills in studio-identity fields (designer, manufacturer, vendor ID, copyright) from `C  Project Files/py/studioConfig.py` if they're empty in the `.glyphs` file, so they don't need to be retyped for every new project, and
+  - aborts the build with a specific list of what's missing if project-specific fields (family name, vertical metric custom parameters) haven't been set yet — those need real judgment in Glyphs.app, so the script deliberately never guesses or prompts for them.
+- Added `C  Project Files/py/studioConfig.py` — one place to edit studio-wide defaults instead of hand-entering them per project.
+
+---
+
 Replace this Readme with info about your project!
 
 Note: This template is for Glyphs. GlyphsLib is an unofficial tool to generate Glyphs files outside of GlyphsApp (see [GlyphsLib](https://github.com/googlefonts/glyphsLib)). It might not cover all use cases, so use caution.

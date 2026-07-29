@@ -14,6 +14,18 @@ ttfDir="$buildDir/VF-TTFs"
 woffDir="$buildDir/VF-WOFF2s"
 
 # -----------------------------------------------------------------------
+# prepare & check sources
+# fills in safe studio-identity defaults, aborts if project-specific fields
+# (family name, vertical metrics, etc.) are missing - see prepareGlyphsFile.py
+
+echo "Preparing sources..."
+
+find "$sourcesDir" -path '**/*.glyphs' -print0 | while read -d $'\0' glyphsFile
+do
+    python "C  Project Files/py/prepareGlyphsFile.py" "$glyphsFile"
+done
+
+# -----------------------------------------------------------------------
 # build TTFs
 
 echo " "
