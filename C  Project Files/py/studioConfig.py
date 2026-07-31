@@ -14,3 +14,12 @@ STUDIO_DEFAULTS = {
     "copyright": "Copyright YSFT INC dba Type Angel",
     "vendorID": "ANGL",
 }
+
+# Used by makeTrialFont.py to relabel a full, already-built OTF as a trial
+# copy - same outlines/features, different name-table metadata only.
+TRIAL_SUFFIX = "Unlicensed Trial"  # appended to family/full/typographic names
+TRIAL_COPYRIGHT_SUFFIX = "Trial version - not licensed for commercial or production use."
+
+# TODO: fill this in with your actual trial license text before shipping
+# any trial build - this placeholder is not real legal language.
+TRIAL_LICENSE = "PLACEHOLDER: replace with your actual trial license text."

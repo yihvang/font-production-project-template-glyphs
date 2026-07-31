@@ -62,6 +62,28 @@ do
 done
 
 # -----------------------------------------------------------------------
+# make trial fonts
+# full, unrestricted copies with a trial suffix in the name and a
+# different license - not a cut-down font, just relabeled for trial
+# distribution. See makeTrialFont.py / studioConfig.py.
+
+echo " "
+echo "Making Trial fonts..."
+
+trialOtfDir="$buildDir/Trial-OTF"
+trialWoffDir="$buildDir/Trial-WOFF2"
+
+rm -rf "$trialOtfDir" "$trialWoffDir"
+mkdir -p "$trialOtfDir" "$trialWoffDir"
+
+find "$otfDir" -path '*.otf' -print0 | while read -d $'\0' otfFile
+do
+    trialName="$(basename "${otfFile%.otf}")-Trial.otf"
+    python "C  Project Files/py/makeTrialFont.py" "$otfFile" "$trialOtfDir/$trialName"
+    fonttools ttLib.woff2 compress -o "$trialWoffDir/${trialName/.otf/.woff2}" "$trialOtfDir/$trialName"
+done
+
+# -----------------------------------------------------------------------
 # build TTFs
 
 echo " "
