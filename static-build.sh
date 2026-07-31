@@ -51,8 +51,14 @@ find "$otfDir" -path '*.otf' -print0 | while read -d $'\0' otfFile
 do
     # ... removes Mac names
     python "C  Project Files/py/removeMacNames.py" "$otfFile"
-    # ... applies autohinting
-    psautohint --all "$otfFile"
+    # ... applies autohinting, but only if stem hints are actually set -
+    # psautohint errors out hard otherwise. Fine to skip until closer to
+    # release (Font Info > Masters > Hints, once outlines are frozen).
+    if python "C  Project Files/py/hasStemHints.py" "$otfFile"; then
+        psautohint --all "$otfFile"
+    else
+        echo "  Skipped autohinting for $(basename "$otfFile") - no stem hints set yet."
+    fi
 done
 
 # -----------------------------------------------------------------------
