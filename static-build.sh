@@ -10,9 +10,9 @@ sourcesDir="A  Font Sources"
 buildDir="B  Builds"
 proofDir="D  Proofs"
 
-otfDir="$buildDir/OTFs"
-ttfDir="$buildDir/TTFs"
-woffDir="$buildDir/WOFF2s"
+otfDir="$buildDir/OTF"
+ttfDir="$buildDir/TTF"
+woffDir="$buildDir/WOFF2"
 
 # -----------------------------------------------------------------------
 # prepare & check sources

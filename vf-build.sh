@@ -10,8 +10,8 @@ sourcesDir="A  Font Sources"
 buildDir="B  Builds"
 proofDir="D  Proofs"
 
-ttfDir="$buildDir/VF-TTFs"
-woffDir="$buildDir/VF-WOFF2s"
+ttfDir="$buildDir/VF-TTF"
+woffDir="$buildDir/VF-WOFF2"
 
 # -----------------------------------------------------------------------
 # prepare & check sources
