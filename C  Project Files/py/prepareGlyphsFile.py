@@ -119,25 +119,53 @@ def ensure_nbsp_shares_space(font):
     return True
 
 
+def active_master_ids(font):
+    """
+    Master IDs referenced by at least one active, exporting instance. Falls
+    back to every master if there are no active instances (e.g. a VF-only
+    project with no static instances defined yet).
+
+    Vertical metrics need to cover whatever is actually being built - a
+    master that's only used by a deactivated instance (a weight not shipping
+    in this build) shouldn't gate or inflate win metrics for a build that
+    doesn't include it. Once that instance is reactivated, its master comes
+    back into scope automatically.
+    """
+    ids = set()
+    for instance in font.instances:
+        if instance.active and instance.exports:
+            ids.update(instance.instanceInterpolations.keys())
+    return ids or {m.id for m in font.masters}
+
+
+def active_masters(font):
+    """The GSFontMaster objects behind active_master_ids(font)."""
+    keep_ids = active_master_ids(font)
+    return [m for m in font.masters if m.id in keep_ids]
+
+
 def resolve_glyph_bounds(font):
     """
     Builds the master UFOs (resolving automatic component alignment, same as
     the real build) and returns {(glyph_name, master_name): (left, bottom,
-    right, top)} for every exporting glyph with ink, in every master.
+    right, top)} for every exporting glyph with ink, in every master that's
+    actually reachable from an active, exporting instance.
     """
     ufos = glyphsLib.to_ufos(font, ufo_module=defcon)
-    master_names = [m.name for m in font.masters]
+    keep_ids = active_master_ids(font)
     export_names = {g.name for g in font.glyphs if g.export}
 
     resolved = {}
-    for ufo, master_name in zip(ufos, master_names):
+    for ufo, master in zip(ufos, font.masters):
+        if master.id not in keep_ids:
+            continue
         for glyph in ufo:
             if glyph.name not in export_names:
                 continue
             b = glyph.bounds
             if b is None:
                 continue
-            resolved[(glyph.name, master_name)] = b
+            resolved[(glyph.name, master.name)] = b
     return resolved
 
 
@@ -174,7 +202,7 @@ def find_outlier_glyphs(resolved, ascender, descender):
 
 def compute_recommended_metrics(font, resolved):
     upm = font.upm
-    cap_height = max((m.capHeight for m in font.masters), default=round(upm * 0.7))
+    cap_height = max((m.capHeight for m in active_masters(font)), default=round(upm * 0.7))
     total = round(upm * TARGET_LINE_HEIGHT_RATIO)
     padding = round((total - cap_height) / 2)
     typo_ascender = cap_height + padding
@@ -204,8 +232,8 @@ def fill_vertical_metrics(font, resolved):
     is never overwritten.
     """
     upm = font.upm
-    ascender = max((m.ascender for m in font.masters), default=round(upm * 0.8))
-    descender = min((m.descender for m in font.masters), default=-round(upm * 0.2))
+    ascender = max((m.ascender for m in active_masters(font)), default=round(upm * 0.8))
+    descender = min((m.descender for m in active_masters(font)), default=-round(upm * 0.2))
     outliers = find_outlier_glyphs(resolved, ascender, descender)
 
     recommended = compute_recommended_metrics(font, resolved)
